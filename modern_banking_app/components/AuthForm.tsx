@@ -107,11 +107,18 @@ const AuthForm = ({ type }: { type: string }) => {
                       type="text"
                     />
                   </div>
-                  <CustomInputs // Address field
+                  <CustomInputs // Address1 field
                     control={form.control}
                     name="address1"
-                    label="Address"
+                    label="Address 1"
                     placeholder="Enter your current residental address"
+                    type="text"
+                  />
+                  <CustomInputs // Address2 field
+                    control={form.control}
+                    name="address2"
+                    label="Address 2"
+                    placeholder="P.O. box or apt/unit number"
                     type="text"
                   />
                   <CustomInputs // City field
