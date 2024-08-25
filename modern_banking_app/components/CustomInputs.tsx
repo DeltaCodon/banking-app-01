@@ -2,7 +2,7 @@ import React from "react";
 import { FormField, FormLabel, FormControl, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 
-import { Control, FieldPath, Form } from "react-hook-form";
+import { Control, FieldPath } from "react-hook-form";
 import { z } from "zod";
 import { authFormSchema } from "@/lib/utils";
 
@@ -14,6 +14,7 @@ interface CustomInput {
   label: string;
   placeholder: string;
   type: string;
+  id: string;
 }
 
 const CustomInputs = ({
@@ -22,6 +23,7 @@ const CustomInputs = ({
   label,
   placeholder,
   type,
+  id,
 }: CustomInput) => {
   return (
     <FormField
@@ -36,6 +38,7 @@ const CustomInputs = ({
                 placeholder={placeholder}
                 className="input-class"
                 type={type}
+                id={id}
                 {...field}
               />
             </FormControl>
