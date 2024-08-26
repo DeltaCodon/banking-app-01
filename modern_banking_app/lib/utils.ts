@@ -211,6 +211,5 @@ export const authFormSchema = (type: string) =>
     ssn: type === "sign-in" ? z.string().optional() : z.string().min(9).max(9),
     // sign in and sign up page
     email: z.string().email(),
-    username: z.string().min(8),
     password: z.string().min(8).max(30),
   });
