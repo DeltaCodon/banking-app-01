@@ -167,7 +167,7 @@ const AuthForm = ({ type }: { type: string }) => {
                     <CustomInputs // Postal Code Field
                       control={form.control}
                       name="postalCode"
-                      label="postalCode"
+                      label="Postal Code"
                       placeholder="ex: 78043"
                       type="text"
                       id="postalCode"
@@ -178,7 +178,7 @@ const AuthForm = ({ type }: { type: string }) => {
                       control={form.control}
                       name="dateOfBirth"
                       label="Date of Birth"
-                      placeholder="mm/dd/yyyy"
+                      placeholder="YYYY-MM-DD"
                       type="date"
                       id="dateOfBirth"
                     />
