@@ -70,7 +70,11 @@ export const PTFormField = ({
                     {...field}
                   />
                 ) : compo === "textarea" ? (
-                  <Textarea placeholder={placeholder} className="input-class" />
+                  <Textarea
+                    placeholder={placeholder}
+                    className="input-class"
+                    {...field}
+                  />
                 ) : (
                   compo
                 )}

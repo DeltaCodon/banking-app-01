@@ -28,7 +28,7 @@ export const createTransaction = async (
 
     return parseStringify(newTransaction);
   } catch (error) {
-    console.log(error);
+    console.log(error, "Issue creating a transaction 12-31");
   }
 };
 

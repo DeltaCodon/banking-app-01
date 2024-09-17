@@ -21,8 +21,6 @@ const TransactionHistory = async ({
 
   const account = await getAccount({ appwriteItemId });
 
-  console.log(accounts, "hi", account);
-
   return (
     <div className="transactions">
       <div className="transactions-header">
