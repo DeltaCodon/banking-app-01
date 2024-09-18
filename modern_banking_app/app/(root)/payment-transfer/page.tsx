@@ -9,7 +9,6 @@ const Transfer = async () => {
   const accounts = await getAccounts({
     userId: loggedIn.$id,
   });
-  if (!accounts) return;
   return (
     <section className="payment-transfer">
       <HeaderBox

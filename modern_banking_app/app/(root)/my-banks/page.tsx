@@ -9,7 +9,6 @@ const MyBanks = async () => {
   const accounts = await getAccounts({
     userId: loggedIn.$id,
   });
-  if (!accounts) return;
   return (
     <section className="flex">
       <div className="my-banks">
