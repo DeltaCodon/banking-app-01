@@ -10,6 +10,7 @@ import {
   ProcessorTokenCreateRequestProcessorEnum,
   Products,
 } from "plaid";
+
 import { plaidClient } from "@/lib/plaid";
 import { revalidatePath } from "next/cache";
 import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
@@ -32,10 +33,7 @@ export const getUserInfo = async ({ userId }: getUserInfoProps) => {
 
     return parseStringify(user.documents[0]);
   } catch (error) {
-    console.log(
-      error,
-      "There was an issue trying to get the user's info. user.actions:23-36"
-    );
+    console.log(error);
   }
 };
 
@@ -121,6 +119,7 @@ export async function getLoggedInUser() {
 
     return parseStringify(user);
   } catch (error) {
+    console.log(error);
     return null;
   }
 }
@@ -134,6 +133,26 @@ export const logoutAccount = async () => {
     await account.deleteSession("current");
   } catch (error) {
     return null;
+  }
+};
+
+export const createLinkToken = async (user: User) => {
+  try {
+    const tokenParams = {
+      user: {
+        client_user_id: user.$id,
+      },
+      client_name: `${user.firstName} ${user.lastName}`,
+      products: ["auth"] as Products[],
+      language: "en",
+      country_codes: ["US"] as CountryCode[],
+    };
+
+    const response = await plaidClient.linkTokenCreate(tokenParams);
+
+    return parseStringify({ linkToken: response.data.link_token });
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -164,30 +183,7 @@ export const createBankAccount = async ({
 
     return parseStringify(bankAccount);
   } catch (error) {
-    console.log(
-      error,
-      "Something went wrong with the createBankAccount function"
-    );
-  }
-};
-
-export const createLinkToken = async (user: User) => {
-  try {
-    const tokenParams = {
-      user: {
-        client_user_id: user.$id,
-      },
-      client_name: `${user.firstName} ${user.lastName}`,
-      products: ["auth"] as Products[],
-      language: "en",
-      country_codes: ["US"] as CountryCode[],
-    };
-
-    const response = await plaidClient.linkTokenCreate(tokenParams);
-
-    return parseStringify({ linkToken: response.data.link_token });
-  } catch (error) {
-    console.log(error, "error");
+    console.log(error);
   }
 };
 
@@ -196,34 +192,34 @@ export const exchangePublicToken = async ({
   user,
 }: exchangePublicTokenProps) => {
   try {
-    // 1). Exchange public token for access token and item ID
+    // Exchange public token for access token and item ID
     const response = await plaidClient.itemPublicTokenExchange({
       public_token: publicToken,
     });
 
     const accessToken = response.data.access_token;
-    const itemID = response.data.item_id;
+    const itemId = response.data.item_id;
 
-    // 2). Get account info from plaid using the access token
+    // Get account information from Plaid using the access token
     const accountsResponse = await plaidClient.accountsGet({
       access_token: accessToken,
     });
 
     const accountData = accountsResponse.data.accounts[0];
 
-    // 3.) Create a processor token for Dwolla using the access token and account ID
+    // Create a processor token for Dwolla using the access token and account ID
     const request: ProcessorTokenCreateRequest = {
       access_token: accessToken,
       account_id: accountData.account_id,
       processor: "dwolla" as ProcessorTokenCreateRequestProcessorEnum,
     };
 
-    const processorTokeResponse = await plaidClient.processorTokenCreate(
+    const processorTokenResponse = await plaidClient.processorTokenCreate(
       request
     );
-    const processorToken = processorTokeResponse.data.processor_token;
+    const processorToken = processorTokenResponse.data.processor_token;
 
-    // 4.) Create a funding source URL for the account using the Dwolla customer ID, processor token, and bank name
+    // Create a funding source URL for the account using the Dwolla customer ID, processor token, and bank name
     const fundingSourceUrl = await addFundingSource({
       dwollaCustomerId: user.dwollaCustomerId,
       processorToken,
@@ -233,10 +229,10 @@ export const exchangePublicToken = async ({
     // If the funding source URL is not created, throw an error
     if (!fundingSourceUrl) throw Error;
 
-    // 5.) Create a bank account using the use ID, item ID, account ID, access token, funding source URL, and shareable ID
+    // Create a bank account using the user ID, item ID, account ID, access token, funding source URL, and shareableId ID
     await createBankAccount({
       userId: user.$id,
-      bankId: itemID,
+      bankId: itemId,
       accountId: accountData.account_id,
       accessToken,
       fundingSourceUrl,
@@ -251,14 +247,10 @@ export const exchangePublicToken = async ({
       publicTokenExchange: "complete",
     });
   } catch (error) {
-    console.log(
-      "error in user.actions.tsx 94:xx while creating exchanging token",
-      error
-    );
+    console.error("An error occurred while creating exchanging token:", error);
   }
 };
 
-// Multiple Banks retrieval
 export const getBanks = async ({ userId }: getBanksProps) => {
   try {
     const { database } = await createAdminClient();
@@ -271,14 +263,10 @@ export const getBanks = async ({ userId }: getBanksProps) => {
 
     return parseStringify(banks.documents);
   } catch (error) {
-    console.log(
-      error,
-      "There was an issue trying to get the info for all present banks. user.actions:233-236"
-    );
+    console.log(error);
   }
 };
 
-// Singular Bank retrieval
 export const getBank = async ({ documentId }: getBankProps) => {
   try {
     const { database } = await createAdminClient();
@@ -291,12 +279,10 @@ export const getBank = async ({ documentId }: getBankProps) => {
 
     return parseStringify(bank.documents[0]);
   } catch (error) {
-    console.log(
-      error,
-      "There was an issue trying to get the user's bank. user.actions:252-266"
-    );
+    console.log(error);
   }
 };
+
 export const getBankByAccountId = async ({
   accountId,
 }: getBankByAccountIdProps) => {
@@ -313,9 +299,6 @@ export const getBankByAccountId = async ({
 
     return parseStringify(bank.documents[0]);
   } catch (error) {
-    console.log(
-      error,
-      "There was an issue trying to get the user's bank. user.actions:252-266"
-    );
+    console.log(error);
   }
 };
